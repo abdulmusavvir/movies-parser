@@ -1,10 +1,15 @@
 def imageName = 'abdulmusavvirrohe/movies-parser'
-node(){
-    stage('checkout code'){
+
+node {
+    stage('Checkout Code') {
         checkout scm
     }
-    stage('Quality check'){
+    
+    stage('Quality Check') {
+        // Build the Docker image for testing
         sh "docker build -t ${imageName}-test -f Dockerfile.test ."
-        sh "docker run --rm ${imageName}-test golint"
+
+        // Run the linter inside the Docker container
+        sh "docker run --rm ${imageName}-test golangci-lint run ./..."
     }
 }
