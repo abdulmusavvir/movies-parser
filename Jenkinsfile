@@ -15,4 +15,7 @@ node {
     stage ('Unit test'){
         sh "docker run --rm ${imageName}-test go test"
     }
+    stage ('Security Test'){
+        sh "docker run -u root:root nancy /go/src/github/mlabouardy/movies-parser/Gopkg.lock"
+    }
 }
