@@ -1,12 +1,21 @@
-FROM golang:1.16.5
-WORKDIR /go/src/github.com/mlabouardy/movies-parser
-COPY main.go go.mod .
-RUN go get -v
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app main.go
+# Start with the official Go image
+FROM golang:1.20
 
-FROM alpine:latest  
-LABEL Maintainer mlabouardy
-RUN apk --no-cache add ca-certificates
-WORKDIR /root/
-COPY --from=0 /go/src/github.com/mlabouardy/movies-parser/app .
-CMD ["./app"] 
+# Set the Current Working Directory inside the container
+WORKDIR /app
+
+# Copy go.mod and go.sum files
+COPY go.mod ./
+COPY go.sum ./
+
+# Download all dependencies. Dependencies will be cached if the go.mod and go.sum files are not changed
+RUN go mod download
+
+# Copy the source code into the container
+COPY . .
+
+# Install golangci-lint
+RUN go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+
+# Command to run when starting the container
+CMD ["golangci-lint", "run", "./..."]
