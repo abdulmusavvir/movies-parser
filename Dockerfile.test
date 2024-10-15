@@ -1,13 +1,19 @@
 FROM golang:1.13.4
+
+# Set the working directory inside the container
 WORKDIR /go/src/github/mlabouardy/movies-parser
 
-#ENV VERSION v1.0.22
+# Set the Go build cache location
 ENV GOCACHE /tmp
 
-#RUN wget https://github.com/sonatype-nexus-community/nancy/releases/download/$VERSION/nancy-linux.amd64-$VERSION -O nancy && \
-#    chmod +x nancy && mv nancy /usr/local/bin/nancy
-RUN go get -u golang.org/x/lint/golint
+# Install golangci-lint (recommended Go linter tool)
+RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.54.2
 
+# Copy the project files into the container
 COPY . .
 
-RUN go get -v 
+# Install all Go dependencies
+RUN go get -v
+
+# Run golangci-lint to perform linting checks on the code
+RUN golangci-lint run ./...
