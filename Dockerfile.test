@@ -1,27 +1,13 @@
-# Use the official Golang image as the base image (updated to Go 1.22.1)
-FROM golang:1.22.1
-
-# Set the working directory inside the container
+FROM golang:1.13.4
 WORKDIR /go/src/github/mlabouardy/movies-parser
 
-# Set Go environment variables
+#ENV VERSION v1.0.22
 ENV GOCACHE /tmp
-ENV GO111MODULE=on
 
-# Copy the entire source code to the working directory in the container
+#RUN wget https://github.com/sonatype-nexus-community/nancy/releases/download/$VERSION/nancy-linux.amd64-$VERSION -O nancy && \
+#    chmod +x nancy && mv nancy /usr/local/bin/nancy
+RUN go get -u golang.org/x/lint/golint
+
 COPY . .
 
-# Install dependencies
-RUN go mod download
-
-# Install golangci-lint for code linting
-RUN go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-
-# Run the linter and exit on errors
-RUN golangci-lint run ./...
-
-# Build the Go app
-RUN go build -o movies-parser .
-
-# Command to run the application
-CMD ["./movies-parser"]
+RUN go get -v 
