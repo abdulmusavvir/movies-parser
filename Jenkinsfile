@@ -1,3 +1,5 @@
+
+import groovy.transform.Field
 // def imageName = 'abdulmusavvirrohe/movies-parser'
 
 // node {
