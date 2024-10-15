@@ -1,21 +1,13 @@
-# Start with the official Go image
-FROM golang:1.20
+FROM golang:1.13.4
+WORKDIR /go/src/github/mlabouardy/movies-parser
 
-# Set the Current Working Directory inside the container
-WORKDIR /app
+#ENV VERSION v1.0.22
+ENV GOCACHE /tmp
 
-# Copy go.mod and go.sum files
-COPY go.mod ./
-COPY go.sum ./
+#RUN wget https://github.com/sonatype-nexus-community/nancy/releases/download/$VERSION/nancy-linux.amd64-$VERSION -O nancy && \
+#    chmod +x nancy && mv nancy /usr/local/bin/nancy
+RUN go get -u golang.org/x/lint/golint
 
-# Download all dependencies. Dependencies will be cached if the go.mod and go.sum files are not changed
-RUN go mod download
-
-# Copy the source code into the container
 COPY . .
 
-# Install golangci-lint
-RUN go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-
-# Command to run when starting the container
-CMD ["golangci-lint", "run", "./..."]
+RUN go get -v 
