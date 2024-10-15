@@ -135,15 +135,17 @@ func main() {
 		if err != nil {
 			log.Fatalf("Error making HTTP request: %v", err)
 		}
-		defer respHttp.Body.Close()
 		if respHttp.StatusCode != 200 {
 			log.Fatalf("status code error: %d %s", respHttp.StatusCode, respHttp.Status)
 		}
 
+		// Read the response body
 		data, err := ioutil.ReadAll(respHttp.Body)
 		if err != nil {
 			log.Fatalf("Error reading HTTP response body: %v", err)
 		}
+		// Close the response body after reading
+		respHttp.Body.Close()
 
 		movie, err := ParseMovie(string(data))
 		if err != nil {
