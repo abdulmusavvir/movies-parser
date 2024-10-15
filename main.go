@@ -119,7 +119,10 @@ func main() {
 		}
 
 		rawMovie := Movie{}
-		json.Unmarshal([]byte(*respSQS.Messages[0].Body), &rawMovie)
+		err = json.Unmarshal([]byte(*respSQS.Messages[0].Body), &rawMovie)
+		if err != nil {
+			log.Fatalf("Error unmarshalling SQS message: %v", err)
+		}
 
 		url := fmt.Sprintf("https://www.imdb.com/title/%s", rawMovie.ID)
 		reqHttp, err := http.NewRequest("GET", url, nil)
@@ -129,12 +132,18 @@ func main() {
 		reqHttp.Header.Add("Accept-Language", "en-us")
 
 		respHttp, err := httpClient.Do(reqHttp)
+		if err != nil {
+			log.Fatalf("Error making HTTP request: %v", err)
+		}
 		defer respHttp.Body.Close()
 		if respHttp.StatusCode != 200 {
 			log.Fatalf("status code error: %d %s", respHttp.StatusCode, respHttp.Status)
 		}
 
-		data, _ := ioutil.ReadAll(respHttp.Body)
+		data, err := ioutil.ReadAll(respHttp.Body)
+		if err != nil {
+			log.Fatalf("Error reading HTTP response body: %v", err)
+		}
 
 		movie, err := ParseMovie(string(data))
 		if err != nil {
