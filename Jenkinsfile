@@ -35,12 +35,12 @@ node {
 
         parallel(
             'Quality Test':{
-             ImageTest.inside{
+             ImageTest.inside(){
                 sh 'golint'
              }   
             },
             'Unit Test':{
-              ImageTest.inside{
+              ImageTest.inside(){
                 sh 'go test'
             }
             },
