@@ -4,17 +4,18 @@ FROM golang:1.13.4
 # Set the working directory inside the container
 WORKDIR /go/src/github/mlabouardy/movies-parser
 
-# Set Go cache environment variable
+# Set Go environment variables
 ENV GOCACHE /tmp
-
-# Install golangci-lint for code linting
-RUN go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+ENV GO111MODULE=on
 
 # Copy the entire source code to the working directory in the container
 COPY . .
 
 # Install dependencies
 RUN go mod download
+
+# Install golangci-lint for code linting
+RUN go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
 
 # Run the linter and exit on errors
 RUN golangci-lint run ./...
